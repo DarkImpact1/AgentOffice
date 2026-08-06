@@ -1,0 +1,58 @@
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+credentials.json
+token.json
+*.pem
+*.key
+secrets/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+*.egg-info/
+.eggs/
+.pytest_cache/
+.ruff_cache/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+data/
+
+# Node/Frontend
+node_modules/
+dist/
+build/
+frontend/dist/
+frontend/node_modules/
+.npm
+.pnpm-store/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+/tmp/
+
+# Build artifacts
+*.egg
+*.whl
