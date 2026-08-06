@@ -1,6 +1,9 @@
 import { useEffect, useRef, useCallback, useState } from 'react'
 import { useStore } from '../store'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const WS_URL = API_URL.replace('http', 'ws').replace('https', 'wss')
+
 export function useWebSocket() {
   const ws = useRef<WebSocket | null>(null)
   const reconnectTimeout = useRef<NodeJS.Timeout | null>(null)
@@ -11,7 +14,7 @@ export function useWebSocket() {
     if (ws.current?.readyState === WebSocket.OPEN) return
 
     try {
-      const wsUrl = `ws://localhost:8000/ws`
+      const wsUrl = `${WS_URL}/ws`
       ws.current = new WebSocket(wsUrl)
 
       ws.current.onopen = () => {
@@ -24,7 +27,6 @@ export function useWebSocket() {
         console.log('WebSocket disconnected')
         setConnected(false)
         
-        // Reconnect with backoff
         const delay = Math.min(1000 * Math.pow(2, retryCount), 10000)
         reconnectTimeout.current = setTimeout(() => {
           setRetryCount(r => r + 1)
@@ -48,7 +50,6 @@ export function useWebSocket() {
           } else if (data.event === 'task_started') {
             updateAgentStatus(data.agent, 'walking')
           } else if (data.event === 'task_completed') {
-            // Brief reporting state, then idle
             updateAgentStatus(data.agent, 'reporting')
             setTimeout(() => updateAgentStatus(data.agent, 'idle'), 2000)
           }
@@ -69,11 +70,9 @@ export function useWebSocket() {
   }, [])
 
   useEffect(() => {
-    // Initial connect
     connect()
     
-    // Also fetch agents via HTTP as fallback
-    fetch('http://localhost:8000/agents')
+    fetch(`${API_URL}/agents`)
       .then(res => res.json())
       .then(agents => {
         if (Array.isArray(agents)) {
@@ -92,3 +91,5 @@ export function useWebSocket() {
 
   return { send }
 }
+
+export { API_URL }

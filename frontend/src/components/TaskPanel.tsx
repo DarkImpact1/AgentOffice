@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useStore, Task, Application } from '../store'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+
 const styles = {
   panel: {
     width: 380,
@@ -106,9 +108,9 @@ export function TaskPanel() {
   const fetchData = async () => {
     try {
       const [tasksRes, appsRes, statsRes] = await Promise.all([
-        fetch('/api/tasks'),
-        fetch('/api/tasks/pending-approvals'),
-        fetch('/api/stats'),
+        fetch(`${API_URL}/tasks`),
+        fetch(`${API_URL}/tasks/pending-approvals`),
+        fetch(`${API_URL}/stats`),
       ])
       if (tasksRes.ok) setTasks(await tasksRes.json())
       if (appsRes.ok) setApplications(await appsRes.json())
@@ -120,12 +122,12 @@ export function TaskPanel() {
   }
 
   const approveApplication = async (id: number) => {
-    await fetch(`/api/tasks/approve/${id}`, { method: 'PATCH' })
+    await fetch(`${API_URL}/tasks/approve/${id}`, { method: 'PATCH' })
     fetchData()
   }
 
   const updateTaskStatus = async (id: number, status: string) => {
-    await fetch(`/api/tasks/${id}`, {
+    await fetch(`${API_URL}/tasks/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),

@@ -2,7 +2,7 @@ import { Canvas } from '@react-three/fiber'
 import { Suspense, useState } from 'react'
 import { Office } from './components/Office'
 import { TaskPanel } from './components/TaskPanel'
-import { useWebSocket } from './hooks/useWebSocket'
+import { useWebSocket, API_URL } from './hooks/useWebSocket'
 import { useStore, Agent } from './store'
 
 function LoadingFallback() {
@@ -30,7 +30,7 @@ function ChatModal({ agent, onClose, onSubmit }: ChatModalProps) {
     setStatus('working')
     
     try {
-      const response = await fetch(`http://localhost:8000/agents/${agent.name}/execute`, {
+      const response = await fetch(`${API_URL}/agents/${agent.name}/execute`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ task: input })
