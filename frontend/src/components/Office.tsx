@@ -1,8 +1,6 @@
-import { useRef, useState } from 'react'
 import { OrbitControls, Text, RoundedBox } from '@react-three/drei'
 import { useStore } from '../store'
 import { AgentCharacter } from './AgentCharacter'
-import * as THREE from 'three'
 
 interface OfficeProps {
   onAgentClick: (name: string) => void

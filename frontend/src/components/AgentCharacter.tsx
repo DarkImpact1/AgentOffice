@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Text, RoundedBox, Html } from '@react-three/drei'
+import { Text } from '@react-three/drei'
 import { Agent } from '../store'
 import * as THREE from 'three'
 

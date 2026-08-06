@@ -6,7 +6,7 @@ const WS_URL = API_URL.replace('http', 'ws').replace('https', 'wss')
 
 export function useWebSocket() {
   const ws = useRef<WebSocket | null>(null)
-  const reconnectTimeout = useRef<NodeJS.Timeout | null>(null)
+  const reconnectTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { setAgents, updateAgentStatus, setConnected } = useStore()
   const [retryCount, setRetryCount] = useState(0)
 
@@ -34,14 +34,13 @@ export function useWebSocket() {
         }, delay)
       }
 
-      ws.current.onerror = (error) => {
-        console.log('WebSocket error:', error)
+      ws.current.onerror = () => {
+        console.log('WebSocket error')
       }
 
       ws.current.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data)
-          console.log('WebSocket message:', data)
           
           if (data.event === 'connected' && data.data?.agents) {
             setAgents(data.data.agents)

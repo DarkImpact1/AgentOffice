@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useStore, Task, Application } from '../store'
+import { useStore } from '../store'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 

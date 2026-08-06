@@ -247,7 +247,7 @@ function ChatModal({ agent, onClose, onSubmit }: ChatModalProps) {
 }
 
 function App() {
-  const { send } = useWebSocket()
+  useWebSocket() // Initialize WebSocket connection
   const { connected, agents, updateAgentStatus } = useStore()
   const [activeAgent, setActiveAgent] = useState<Agent | null>(null)
 
