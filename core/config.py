@@ -1,9 +1,10 @@
 from pathlib import Path
+from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     anthropic_api_key: str = ""
     telegram_bot_token: str = ""
@@ -16,6 +17,7 @@ class Settings(BaseSettings):
     default_model: str = "claude-sonnet-4-20250514"
     complex_model: str = "claude-sonnet-4-20250514"
     log_level: str = "INFO"
+    port: int = 8000
 
     def ensure_data_dir(self) -> None:
         self.database_path.parent.mkdir(parents=True, exist_ok=True)

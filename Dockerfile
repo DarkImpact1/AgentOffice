@@ -4,19 +4,22 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    chromium \
-    chromium-driver \
+    wget \
+    gnupg \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy all project files first
+# Copy all project files
 COPY . .
 
-# Install Python dependencies (not editable for production)
-RUN pip install --no-cache-dir .
+# Install Python dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir .
 
-# Install Playwright browsers
-RUN playwright install chromium || true
+# Create data directory
+RUN mkdir -p /app/data
 
+# Expose port (Railway uses PORT env variable)
 EXPOSE 8000
 
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Use shell form to allow environment variable substitution
+CMD uvicorn api.main:app --host 0.0.0.0 --port ${PORT:-8000}

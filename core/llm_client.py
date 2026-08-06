@@ -21,7 +21,12 @@ class LLMClient:
         if self._initialized:
             return
         self._initialized = True
-        self.client = Anthropic(api_key=settings.anthropic_api_key)
+        self.client = None
+        if settings.anthropic_api_key:
+            try:
+                self.client = Anthropic(api_key=settings.anthropic_api_key)
+            except Exception:
+                self.client = None
         self.db = db
         self.default_model = settings.default_model
         self.complex_model = settings.complex_model
@@ -59,6 +64,9 @@ class LLMClient:
         json_mode: bool = False,
         max_tokens: int = 1024,
     ) -> str:
+        if not self.client:
+            return ""
+            
         model = self.complex_model if use_complex_model else self.default_model
         messages = [{"role": "user", "content": prompt}]
 
