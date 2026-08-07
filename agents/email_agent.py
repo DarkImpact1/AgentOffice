@@ -1,6 +1,7 @@
 import re
 import json
 import base64
+import os
 from datetime import datetime, timedelta
 from typing import Any, Optional, List, Dict
 from email.utils import parsedate_to_datetime
@@ -34,20 +35,38 @@ class EmailAgent(BaseAgent):
     def _get_gmail_service(self) -> Any:
         if not GOOGLE_AVAILABLE:
             return None
+        
         creds = None
         token_path = settings.google_credentials_path.parent / "token.json"
-        if token_path.exists():
+        
+        # Try to load from environment variable first (for cloud deployment)
+        google_token_env = os.environ.get("GOOGLE_TOKEN")
+        if google_token_env:
+            try:
+                token_data = json.loads(google_token_env)
+                creds = Credentials.from_authorized_user_info(token_data, SCOPES)
+            except Exception:
+                pass
+        
+        # Fall back to token file (for local development)
+        if not creds and token_path.exists():
             creds = Credentials.from_authorized_user_file(str(token_path), SCOPES)
+        
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
                 creds.refresh(Request())
+                # Save refreshed token back to env-compatible format
+                if google_token_env:
+                    print("Token refreshed. Update GOOGLE_TOKEN env var with new token if needed.")
             else:
                 if not settings.google_credentials_path.exists():
                     return None
                 flow = InstalledAppFlow.from_client_secrets_file(str(settings.google_credentials_path), SCOPES)
                 creds = flow.run_local_server(port=0)
+            # Save token locally for development
             with open(token_path, "w") as f:
                 f.write(creds.to_json())
+        
         return build("gmail", "v1", credentials=creds)
 
     def _extract_body(self, payload: dict) -> str:
